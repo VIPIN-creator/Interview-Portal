@@ -1,0 +1,154 @@
+<%- include("includes/header") %>
+
+<div class="container-fluid mt-5">
+
+    <div class="container card rounded mt-5 " >
+        <div class="card-body justify-content-end">
+           
+                <button type="button" class="float-right schedule btn btn-dark" >Schedule a interview</button>
+                <button type="button" class="float-right add btn btn-primary" >Add Candidate</button>
+            
+
+            <% const interviews = locals.list1; %>
+            <h1 class="mt-4 display-3">All the scheduled interviews</h1>
+
+            <% for(let i of interviews) { %>
+            <div class="card mt-4 interviews ">
+                <div class="row justify-content-between card-body" >
+                    <div class="col-auto" >
+                        <% const name = i.name %>
+                        <h2 class="interviewName" > <%= name %></h2>
+                        <% var date = new Date(i.startTime); 
+                        const startTime = date.getHours() + ":" + date.getMinutes();
+                        var dd = String(date.getDate()).padStart(2, '0');
+                        var mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        var yyyy = date.getFullYear();
+                        const startDate =  mm + '/' + dd + '/' + yyyy;
+
+                        date = new Date(i.endTime); 
+                        const endTime = date.getHours() + ":" + date.getMinutes();
+                        dd = String(date.getDate()).padStart(2, '0');
+                        mm = String(date.getMonth() + 1).padStart(2, '0'); //January is 0!
+                        yyyy = date.getFullYear();
+                        const endDate = mm + '/' + dd + '/' + yyyy;
+
+                        %>
+                        <p>Starts on <%= startDate %> at <%= startTime %>  and Ends on <%= endDate %> at <%= endTime %> </p>
+                        <h4>Email of the Participants are</h4>
+                        <% for(let p of i.participants){ %>
+                            <p><%= p %></p>
+                        <% } %>
+                    </div>
+                    <div class="col-auto" ><button type = "click" class="edit btn btn-success" value= '<%= name %>' >Edit</button> </div>
+                </div>
+            </div>
+            <% } %>
+          
+            <h1 class="mt-5 display-3">All the candidates</h1>
+            <% const candidates = locals.list2; %>
+            <ul>
+                <% for(var c = 0; c < candidates.length;  c+=2) { %>
+                    <li> <p> <strong>Name </strong> <%= candidates[c] %>  <strong>Email: </strong> <%= candidates[c+1] %> </p> </li>         
+                <% } %>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    // add a Candidate
+    const add = document.querySelector('.add');
+    add.addEventListener('click', async(e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch('/add_a_candidate', {
+                method : 'GET',
+                headers: {'Content-Type': 'application/json'},
+                mode : 'cors',
+                redirect : 'follow'
+            });
+
+            if(res.status == 200){
+                window.location.assign('/add_a_candidate');
+            }
+            else{
+              throw Error({status : res.status});
+            }
+
+        } catch (error) {
+            console.log('there is a error in redirecting to add_a_candidate page', err);
+        }
+    });
+
+    // Schedule a interview
+    const schedule = document.querySelector('.schedule');
+    schedule.addEventListener('click', async(e) => {
+        e.preventDefault();
+
+        try {
+            const res = await fetch('/schedule_interview', {
+                method : 'GET',
+                headers: {'Content-Type': 'application/json'},
+                mode : 'cors',
+                redirect : 'follow'
+            });
+
+            if(res.status == 200){
+                window.location.assign('/schedule_interview');
+            }
+            else{
+              throw Error({status : res.status});
+            }
+
+        } catch (error) {
+            console.log('there is a error in redirecting to schedule_interview page', err);
+        }
+    });
+
+    // Edit a Scheduled Interview
+    const clicked = document.querySelectorAll('.edit');
+    
+    for(let interview of clicked){
+        
+        interview.addEventListener('click', async(e) => {
+            e.preventDefault();
+            const interviewName = interview.value;
+            console.log("interviewName", interviewName);
+
+            try {
+                const res = await fetch('/edit_interview', { 
+                    method: 'POST', 
+                    body: JSON.stringify({interviewName}), // convert the data object to json string
+                    headers: {'Content-Type': 'application/json'},
+                    mode : 'cors',
+                    redirect : 'follow'
+                    });
+
+                    const data = await res.json();
+            
+
+                console.log(data);
+
+                if(data.error){
+                    error.textContent = data.error;
+                    console.log('errors detected in front-end', data.error);
+                }
+
+                if(data.success){         
+                window.location.assign('/edit_interview');
+                    
+                }
+            } catch (error) {
+                
+            }
+
+            
+
+        })
+    }
+    
+</script>
+
+<%- include("includes/footer") %>

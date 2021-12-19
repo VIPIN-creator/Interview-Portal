@@ -1,0 +1,83 @@
+<%- include("includes/header") %>
+
+
+<div class="container">
+
+    <h2 class="display-4" > <%= locals.name %> Interview</h2>
+
+    <h3 class="display-6">Now, you can select the candidates </h3>
+    <form action = '/schedule_interview' method = "POST" id = "selectCandidates" class="m-5 ">
+
+        <div class="mb-3 error" > </div>
+
+        <% for(let c of locals.candidates){ %>
+
+            <div class="form-check">
+                <label class="form-check-label" for="check1">
+                  <input type="checkbox" class="form-check-input candidates" id="check1" name="option1" value= '<%= c.email %>' ><p>Name <%= c.username %> Email :- <%= c.email %> </p> 
+                </label>
+              </div>
+
+         <% }  %>
+    
+        <button type="submit" class="btn btn-success btn-block" name = "submit">Schedule</button>
+
+    </form>
+</div>
+
+<script>
+    const candidates = document.querySelectorAll('.candidates');
+    const selectCandidatesForm = document.querySelector('#selectCandidates');
+    const error = document.querySelector('.error');
+
+    selectCandidatesForm.addEventListener('submit', async(e) => {
+        e.preventDefault();
+
+        try {
+            const allCandidates = new Array;
+    
+            for(let c of candidates){
+                if(c.checked == true)
+                allCandidates.push(c.value);
+            }
+
+            console.log('allCandidates' , allCandidates);
+
+            if(allCandidates.length < 2) {
+                error.textContent = 'Please Select atleast 2 Candidates';
+                throw error.textContent;
+            }
+
+            const res = await fetch('/schedule_interview', { 
+                    method: 'POST', 
+                    body: JSON.stringify({allCandidates}), // convert the data object to json string
+                    headers: {'Content-Type': 'application/json'},
+                    mode : 'cors',
+                    redirect : 'follow'
+                    });
+
+                    const data = await res.json();
+            
+
+            console.log(data);
+
+            if(data.error){
+                error.textContent = data.error;
+                console.log('errors detected in front-end', data.error);
+            }
+
+            if(data.success){         
+            window.location.assign('/');
+                
+            }
+        } catch (error) {
+            console.log('there is a error in sending the data ', error);       
+        }     
+
+    })
+
+    
+    
+</script>
+
+<%- include("includes/footer") %>

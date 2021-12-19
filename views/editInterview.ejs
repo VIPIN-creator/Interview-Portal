@@ -1,0 +1,100 @@
+<%- include("includes/header") %>
+
+<% const name = locals.edit.name;  %>
+
+<div class="container mt-5 ml-5 mr-5">
+    <form action="/schedule" method="POST" id = "interviewForm">
+        <!-- <div>
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" name = "date" id="date">
+        </div>-->
+        <div class="error mb-3" ></div> 
+        <div>
+            <label for="name" class="form-label">Enter the job name </label>
+            <input type="text" class="form-control" name="name" id="name" value="<%=  name %>" >
+        </div>
+        <div>
+            <label for="startTime" class="form-label">Start Time</label>
+            <input type="datetime-local" class="form-control" name="startTime" value="<%= locals.edit.startTime %>" id="startTime">
+        </div>
+        <div>
+            <label for="endTime" class="form-label">End Time</label>
+            <input type="datetime-local" class="form-control" name="endTime" value="<%= locals.edit.endTime %>" id="endTime">
+        </div>
+       
+        <button type="submit" class="btn btn-success btn-block mt-3" name = "submit">Submit</button>
+    </form>
+    
+</div>
+
+<script>
+     const interviewForm = document.querySelector('#interviewForm');
+    const error = document.querySelector('.error');
+    // const endTime_error = document.querySelector('.endTime.error');
+
+
+    interviewForm.addEventListener('submit', async(e) => {
+        e.preventDefault();
+        const name = interviewForm.name.value;
+        var startTime = interviewForm.startTime.value;
+        var endTime = interviewForm.endTime.value;
+
+        
+        console.log('data', name, startTime, endTime);
+
+        error.textContent = '';
+
+       
+
+        try {
+            
+            var today = new Date();
+            startTime = new Date(startTime);
+            endTime = new Date(endTime);
+
+            if(startTime.length == 0 || endTime.length == 0 || name.length == 0) {
+                error.textContent = 'Please fill all the feilds.'
+                throw error.textContent;
+            }
+
+            if(startTime > endTime || startTime == endTime ){
+                error.textContent = 'Start time must be before end time';
+                throw error.textContent;
+            }
+            
+            if(startTime < today){
+                error.textContent = 'Start time must start after the current time';
+                throw error.textContent;
+            }
+
+            const res = await fetch('/select_candidates', { 
+            method: 'POST', 
+            body: JSON.stringify({name, startTime, endTime }), // convert the data object to json string
+            headers: {'Content-Type': 'application/json'},
+            mode : 'cors',
+            redirect : 'follow'
+            });
+
+            const data = await res.json();
+     
+
+        console.log(data);
+
+        if(data.error){
+            error.textContent = data.error;
+            console.log('errors detected in front-end', data.error);
+        }
+
+        if(data.success){         
+          window.location.assign('/select_candidates');
+            
+        }
+
+
+        } catch (error) {
+            console.log('there is a error in sending the data ', error);
+        }
+    });
+</script>
+
+<%- include("includes/footer") %>

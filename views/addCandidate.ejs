@@ -1,0 +1,69 @@
+<%- include("includes/header") %>
+
+<div class="container mt-5 ml-5 mr-5">
+    <form action="/add" method="POST" id = "candidateForm">
+        <div>
+            <label for="username" class="form-label">Username</label>
+            <input type="text" class="form-control" name = "username" id="username">
+        </div>
+        <div class="username error mb-3" ></div>
+        <div>
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" id="email">
+        </div>
+        <div class="email error mb-3" ></div>
+
+        <button type="submit" class="btn btn-success btn-block" name = "submit">Submit</button>
+    </form>
+    
+</div>
+
+
+<script>
+    const form = document.querySelector('#candidateForm');
+    const username_error = document.querySelector('.username.error');
+    const email_error = document.querySelector('.email.error');
+
+    form.addEventListener('submit', async(e) => {
+        e.preventDefault();
+        const email = form.email.value;
+        const username = form.username.value;
+        
+        console.log('data', email, username);
+
+        username_error.textContent = '';
+        email_error .textContent = '';
+
+        try {
+            const res = await fetch('/add', { 
+            method: 'POST', 
+            body: JSON.stringify({ username, email }), // convert the data object to json string
+            headers: {'Content-Type': 'application/json'},
+            mode : 'cors',
+            redirect : 'follow'
+            });
+
+            const data = await res.json();
+     
+
+        console.log(data);
+
+        if(data.errors){
+            username_error.textContent = data.errors.username;
+            email_error .textContent = data.errors.email;
+            console.log('errors detected in front-end', data.errors);
+        }
+
+        if(data.success){         
+          window.location.assign('/');
+            
+        }
+
+
+        } catch (error) {
+            console.log('there is a error in sending the data ', err);
+        }
+    });
+</script>
+
+<%- include("includes/footer") %>

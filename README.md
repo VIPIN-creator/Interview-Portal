@@ -11,3 +11,4 @@ Each interview is uniquely identified by the job for which it is conducted.
 ![screencapture-localhost-5000-add-a-candidate-2021-12-19-23_52_02](https://user-images.githubusercontent.com/59695863/146686554-efbc92f2-5488-4b84-85bf-8f0001748b6c.png)
 ![screencapture-localhost-5000-schedule-interview-2021-12-19-23_52_55](https://user-images.githubusercontent.com/59695863/146686555-ea774884-f073-47d4-92e8-eb746f7582a3.png)
 ![screencapture-localhost-5000-edit-interview-2021-12-19-23_53_38](https://user-images.githubusercontent.com/59695863/146686558-113f0e8f-501d-4cd1-972e-1293c8085213.png)
+![screencapture-localhost-5000-select-candidates-2021-12-19-23_59_20](https://user-images.githubusercontent.com/59695863/146686604-07b5b290-663c-4a21-9dd0-58cd26cc2d62.png)
